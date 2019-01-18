@@ -1,7 +1,9 @@
-import 'dart:io';
-
+import 'package:bizwy_flutter/utils/Api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -9,10 +11,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-
     final logo = Hero(
       tag: 'hero',
       child: CircleAvatar(
@@ -23,8 +26,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final phone = TextFormField(
-      keyboardType: TextInputType.emailAddress,
+      maxLength: 10,
+      keyboardType: TextInputType.phone,
       autofocus: false,
+      controller: phoneController,
       decoration: InputDecoration(
         hintText: 'Mobile Number',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -34,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     final password = TextFormField(
       autofocus: false,
+      controller: passwordController,
       obscureText: true,
       decoration: InputDecoration(
         hintText: 'Password',
@@ -48,9 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: () {
-          //todo
-        },
+        onPressed: () => fetchLogin(context),
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
         child: Text('Log In', style: TextStyle(color: Colors.white)),
@@ -62,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         'Forgot password?',
         style: TextStyle(color: Colors.black54),
       ),
-      onPressed: () {},
+      onPressed: () => fetchLogin(context),
     );
 
     return new Scaffold(
@@ -84,5 +88,40 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  static const platform = const MethodChannel('flutter.bizwy.com.channel');
+
+  fetchLogin(BuildContext context) async {
+    try {
+      Map<String, String> params = new Map();
+
+      final json = {};
+
+      json['user_mobile'] = phoneController.text;
+      json['user_pin'] = passwordController.text;
+      json['key_fcm'] = 'hfdaobadjcjolb';
+
+      print('JSON:' + json.toString());
+
+      final String encrypted = await platform
+          .invokeMethod('getEncryptedValue()', {"input": json.toString()});
+      print('Encrypted JSON:$encrypted%.');
+
+      params['json_data'] = encrypted;
+
+      print(params.toString());
+      final response = await http.post(Api.loginApi, body: params);
+
+      if (response.statusCode == 200) {
+        // If server returns an OK response, parse the JSON
+        var jsonResponse = convert.jsonDecode(response.body);
+        print(jsonResponse.toString());
+      } else {
+        print("Request failed with status: ${response.statusCode}.");
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }

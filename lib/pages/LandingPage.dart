@@ -26,14 +26,14 @@ class _LandingPageState extends State<LandingPage> {
     var horizontalTitleAlignment =
         Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.center;
 
-    return new InkWell(
-      child: new Padding(
+    return  InkWell(
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: horizontalTitleAlignment,
           children: <Widget>[
-            new Text(
+            Text(
               'User Database',
               style: new TextStyle(
                 fontWeight: FontWeight.bold,
@@ -48,7 +48,7 @@ class _LandingPageState extends State<LandingPage> {
 
   List<Widget> _buildActions() {
     return <Widget>[
-      new IconButton(
+      IconButton(
         icon: const Icon(
           Icons.more_vert,
           color: Colors.white,
@@ -60,7 +60,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: new AppBar(
         title: _buildTitle(context),
         actions: _buildActions(),
