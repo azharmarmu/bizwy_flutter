@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
-import 'package:bizwy_flutter/model/LoginModel.dart';
+import 'package:bizwy_flutter/sql_model/LoginModel.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -16,18 +16,18 @@ class DatabaseHelper {
 
   /*User Table*/
   static final String loginDetails = "LoginDetails";
-  static final String userEmail = "Email";
-  static final String userId = "userid";
-  static final String userFirstName = "FirstName";
-  static final String userLastName = "LastName";
-  static final String userMobileNumber = "MobileNumber";
-  static final String userType = "UserType";
-  static final String userPhoto = "UserPhoto";
-  static final String catalogueId = "CatalogueId";
-  static final String companyId = "CompanyId";
-  static final String lobId = "LobId";
-  static final String branchId = "branchid";
-  static final String loginTime = "LoginTime";
+  static final String userEmail = "email";
+  static final String userId = "user_id";
+  static final String userFirstName = "first_name";
+  static final String userLastName = "last_name";
+  static final String userMobileNumber = "user_mobile";
+  static final String userType = "user_type";
+  static final String userPhoto = "user_photo";
+  static final String catalogueId = "catalogue_id";
+  static final String companyId = "user_company_id";
+  static final String lobId = "lob_id";
+  static final String branchId = "branch_id";
+  static final String loginTime = "login_time";
 
   /*Company Table*/
   static final String companyDetails = "CompanyDetails";
@@ -221,6 +221,24 @@ class DatabaseHelper {
         " TEXT)");
   }
 
+  Future<int> addAdminDetails(LoginModel loginModel) async {
+    var dbClient = await db;
+    int res = await dbClient.insert(adminLoginDetails, loginModel.toMap());
+    print(res);
+    return res;
+  }
+
+  Future<List<LoginModel>> getAdminLoginDetails() async {
+    var dbClient = await db;
+    List<Map> list =
+        await dbClient.rawQuery('SELECT * FROM ' + adminLoginDetails);
+    print("Admin: $list");
+    List<LoginModel> users = new List();
+    for (int i = 0; i < list.length; i++) {
+      users.add(LoginModel.map(list[i]));
+    }
+    return users;
+  }
 
   Future<int> addLoginDetails(LoginModel loginModel) async {
     var dbClient = await db;
@@ -231,22 +249,10 @@ class DatabaseHelper {
   Future<List<LoginModel>> getLoginDetails() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM ' + loginDetails);
+    print("Login: $list");
     List<LoginModel> users = new List();
     for (int i = 0; i < list.length; i++) {
-      LoginModel loginModel = new LoginModel();
-      loginModel.userId = list[i]['userId'];
-      loginModel.userEmail = list[i]['userEmail'];
-      loginModel.userFirstName = list[i]['userFirstName'];
-      loginModel.userLastName = list[i]['userLastName'];
-      loginModel.userType = list[i]['userType'];
-      loginModel.userPhoto = list[i]['userPhoto'];
-      loginModel.catalogueId = list[i]['catalogueId'];
-      loginModel.companyId = list[i]['companyId'];
-      loginModel.lobId = list[i]['lobId'];
-      loginModel.branchId = list[i]['branchId'];
-      loginModel.loginTime = list[i]['loginTime'];
-      loginModel.userMobileNumber = list[i]['userMobileNumber'];
-      users.add(loginModel);
+      users.add(LoginModel.map(list[i]));
     }
     return users;
   }

@@ -1,9 +1,13 @@
+import 'package:bizwy_flutter/sql_model/LoginModel.dart';
+import 'package:bizwy_flutter/pages/LandingPage.dart';
+import 'package:bizwy_flutter/presenter/LoginPresenter.dart';
 import 'package:bizwy_flutter/utils/Api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'package:bizwy_flutter/utils/Theme.dart' as Theme;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,6 +17,35 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
+  LoginPresenter loginPresenter;
+  List<LoginModel> data;
+
+  bool loggedIn = true;
+  Widget bodyProgress = Center(child: CircularProgressIndicator());
+
+  @override
+  void initState() {
+    super.initState();
+    loginPresenter = new LoginPresenter();
+    getUserData();
+  }
+
+  Future getUserData() async {
+    data = await loginPresenter.getUser();
+    if (data != null) {
+      if (data.length > 0) {
+        landingWidget(context);
+      } else {
+        setState(() {
+          loggedIn = false;
+        });
+      }
+    } else {
+      setState(() {
+        loggedIn = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         onPressed: () => fetchLogin(context),
         padding: EdgeInsets.all(12),
-        color: Colors.lightBlueAccent,
+        color: Theme.myColor[50],
         child: Text('Log In', style: TextStyle(color: Colors.white)),
       ),
     );
@@ -69,24 +102,25 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () => fetchLogin(context),
     );
 
-    return new Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.only(left: 24.0, right: 24.0),
-          children: <Widget>[
-            logo,
-            SizedBox(height: 48.0),
-            phone,
-            SizedBox(height: 8.0),
-            password,
-            SizedBox(height: 24.0),
-            loginButton,
-            forgotLabel
-          ],
-        ),
+    final bodyWidget = Center(
+      child: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(left: 24.0, right: 24.0),
+        children: <Widget>[
+          logo,
+          SizedBox(height: 48.0),
+          phone,
+          SizedBox(height: 8.0),
+          password,
+          SizedBox(height: 24.0),
+          loginButton,
+          forgotLabel
+        ],
       ),
+    );
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: loggedIn ? bodyProgress : bodyWidget,
     );
   }
 
@@ -94,34 +128,40 @@ class _LoginPageState extends State<LoginPage> {
 
   fetchLogin(BuildContext context) async {
     try {
-      Map<String, String> params = new Map();
-
-      final json = {};
-
-      json['user_mobile'] = phoneController.text;
-      json['user_pin'] = passwordController.text;
-      json['key_fcm'] = 'hfdaobadjcjolb';
-
-      print('JSON:' + json.toString());
+      Map<String, String> map = {};
+      map['user_mobile'] = phoneController.text;
+      map['user_pin'] = passwordController.text;
+      map['key_fcm'] =
+          "d6h2JWBW7Zo:APA91bGZlA91GtRR2dltssklA-Iv_sWTUVwD1xrByxwnkuzsFG87s5P71Y17Ugta740DP0Xs723EV0t_6PH8K8Gw3Ru8epILETfpG4D8QwMXIoOy5GsCKCjg8UApYu2Fu7VrbJPAlGbf";
 
       final String encrypted = await platform
-          .invokeMethod('getEncryptedValue()', {"input": json.toString()});
-      print('Encrypted JSON:$encrypted%.');
+          .invokeMethod('getEncryptedValue', {"input": convert.jsonEncode(map)});
 
-      params['json_data'] = encrypted;
-
-      print(params.toString());
-      final response = await http.post(Api.loginApi, body: params);
+      final response =
+          await http.post(Api.loginApi, body: {'json_data': encrypted});
 
       if (response.statusCode == 200) {
-        // If server returns an OK response, parse the JSON
-        var jsonResponse = convert.jsonDecode(response.body);
-        print(jsonResponse.toString());
+        Map jsonResponse = convert.jsonDecode(response.body);
+        if (jsonResponse['error_flag'] == false) {
+          LoginModel loginModel = new LoginModel.map(jsonResponse['data']);
+          LoginPresenter()
+              .addUser(loginModel)
+              .then((res) => landingWidget(context))
+              .catchError((onError) => print(onError.toString()));
+        }
       } else {
         print("Request failed with status: ${response.statusCode}.");
       }
     } catch (e) {
       print(e);
     }
+  }
+
+  landingWidget(BuildContext context) {
+    return Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LandingPage()),
+      ModalRoute.withName('/'),
+    );
   }
 }

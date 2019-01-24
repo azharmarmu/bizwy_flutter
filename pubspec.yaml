@@ -45,6 +45,7 @@ flutter:
     - assets/bizwy_logo.png
     - assets/app_icon.png
     - assets/background.png
+    - assets/maxresdefault.png
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

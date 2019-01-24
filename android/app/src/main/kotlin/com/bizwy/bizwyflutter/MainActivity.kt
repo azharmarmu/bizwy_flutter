@@ -21,8 +21,6 @@ class MainActivity : FlutterActivity() {
         GeneratedPluginRegistrant.registerWith(this)
 
         MethodChannel(flutterView, CHANNEL).setMethodCallHandler { call, result ->
-            val log = Logger.getLogger(MainActivity::class.java.name)
-            log.warning(call.method)
             if (call.method == "getEncryptedValue") {
                 val input = call.argument<Any>("input") as String
                 val encryption = getEncryptedValue(input)

@@ -1,4 +1,6 @@
 import 'package:bizwy_flutter/pages/LandingPage.dart';
+import 'package:bizwy_flutter/pages/LoginPage.dart';
+import 'package:bizwy_flutter/utils/Theme.dart' as Theme;
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -8,11 +10,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LandingPage(),
+      title: 'Bizwy Demo',
+      theme: Theme.themeData,
+      home: LoginPage(),
     );
   }
 }
