@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: MyAppBar(title: Strings.profile),
+        title: MyAppBar(title: Strings.profile,appBarType: 1,),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: choiceAction,

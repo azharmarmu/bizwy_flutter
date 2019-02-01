@@ -1,3 +1,4 @@
+import 'package:bizwy_flutter/pages/CustomerPage.dart';
 import 'package:bizwy_flutter/pages/LoginPage.dart';
 import 'package:bizwy_flutter/pages/ProfilePage.dart';
 import 'package:bizwy_flutter/widgets/CircleButtonWidget.dart';
@@ -60,6 +61,7 @@ class _LandingPageState extends State<LandingPage> {
       appBar: AppBar(
         title: MyAppBar(
           title: 'Marmu',
+          appBarType: 1,
         ),
         actions: <Widget>[
           PopupMenuButton<String>(
@@ -156,7 +158,8 @@ class _LandingPageState extends State<LandingPage> {
               ),
               SizedBox(height: 48.0),
               CircleButton(
-                onTap: () => print(Strings.customer),
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CustomerPage())),
                 iconData: Icons.people,
                 iconText: Strings.customer,
               ),

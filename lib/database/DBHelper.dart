@@ -249,7 +249,6 @@ class DatabaseHelper {
   Future<List<LoginModel>> getLoginDetails() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM ' + loginDetails);
-    print("Login: $list");
     List<LoginModel> users = new List();
     for (int i = 0; i < list.length; i++) {
       users.add(LoginModel.map(list[i]));

@@ -9,10 +9,10 @@ class LoginPresenter {
   Future<int> addUser(LoginModel loginModel) {
     if (loginModel.userType == "1") {
       print("add Admin");
-      return DatabaseHelper().addAdminDetails(loginModel);
+      return db.addAdminDetails(loginModel);
     } else {
       print("add Login");
-      return DatabaseHelper().addLoginDetails(loginModel);
+      return db.addLoginDetails(loginModel);
     }
   }
 

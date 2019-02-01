@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  static const platform = const MethodChannel('flutter.bizwy.com.channel');
+
 
   fetchLogin(BuildContext context) async {
     try {
@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
       map['key_fcm'] =
           "d6h2JWBW7Zo:APA91bGZlA91GtRR2dltssklA-Iv_sWTUVwD1xrByxwnkuzsFG87s5P71Y17Ugta740DP0Xs723EV0t_6PH8K8Gw3Ru8epILETfpG4D8QwMXIoOy5GsCKCjg8UApYu2Fu7VrbJPAlGbf";
 
-      final String encrypted = await platform
+      final String encrypted = await Constants.platform
           .invokeMethod('getEncryptedValue', {"input": convert.jsonEncode(map)});
 
       final response =
